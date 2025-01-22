@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Barra de Progreso</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+    <style>
+        #barra_progreso {
+            width: 100%;
+            background-color: #f3f3f3;
+        }
+        #progreso {
+            width: 0%;
+            height: 30px;
+            background-color: #4caf50;
+            text-align: center;
+            line-height: 30px;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <h2>Progreso de la Copia de Archivos</h2>
+    <div id="barra_progreso">
+        <div id="progreso">0%</div>
+    </div>
+
+    <script type="text/javascript">
+        $(document).ready(function(){
+            var socket = io.connect('http://' + document.domain + ':' + location.port);
+            socket.on('progreso', function(data) {
+                $('#progreso').css('width', data.porcentaje + '%');
+                $('#progreso').text(data.porcentaje + '%');
+            });
+        });
+    </script>
+</body>
+</html>
