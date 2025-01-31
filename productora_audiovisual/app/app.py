@@ -1,10 +1,9 @@
 from flask import Flask, render_template
 from flask_socketio import SocketIO, emit
-from utils.prueba_copiado import copiar_y_verificar
+from utils.file_handler import copiar_y_verificar
 import threading
-import time
-import os
-import shutil
+from gevent import monkey
+monkey.patch_all()
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
@@ -12,15 +11,19 @@ socketio = SocketIO(app)
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    return render_template('barra_copia.html')
 
 @app.route('/iniciar_copia')
 def iniciar_copia():
-    origen = 'J:\\BPAV\\CLPR'
-    destino = 'D:\\Prueba_copiado'
+    origen = 'F:\\BPAV\\CLPR'
+    destino = 'E:\\Prueba_copiado'
     extension = '.mp4'
-    threading.Thread(target=copiar_y_verificar, args=(origen, destino, extension, 'sha256', socketio)).start()
+    threading.Thread(target=copiar_y_verificar, args=(origen, destino, extension, socketio)).start()
     return 'Copia iniciada'
+
+@socketio.on('connect')
+def handle_connect():
+    print("Un cliente se ha conectado")
 
 if __name__ == '__main__':
     socketio.run(app, debug=True)

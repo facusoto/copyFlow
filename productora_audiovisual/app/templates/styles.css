@@ -1,132 +1,130 @@
-/* Reset básico */
-* {
+/* Estilos generales */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f8f9fa;
     margin: 0;
     padding: 0;
-    box-sizing: border-box;
 }
 
-body {
-    font-family: Arial, sans-serif;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    background-color: #f4f4f4;
-}
-
+/* Contenedor principal */
 .container {
-    display: flex;
-    width: 90%;
     max-width: 1200px;
-    background-color: #fff;
-    border: 1px solid #ddd;
-    border-radius: 10px;
-    overflow: hidden;
+    margin: 0 auto;
 }
 
-/* Panel izquierdo */
+/* Sección izquierda */
 .left-panel {
-    width: 30%;
-    background-color: #f9f9f9;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     padding: 20px;
-    border-right: 1px solid #ddd;
 }
 
-.logo {
+/* Logo */
+.left-panel .logo {
+    text-align: center;
     font-size: 24px;
     font-weight: bold;
-    text-align: center;
     margin-bottom: 20px;
 }
 
-.form h2 {
-    font-size: 18px;
-    margin-bottom: 10px;
+/* Formulario */
+.left-panel .form {
+    margin-top: 20px;
 }
 
-.form input,
-.form textarea,
-.form button {
-    width: 100%;
-    margin-bottom: 10px;
-    padding: 10px;
-    border: 1px solid #ccc;
+.left-panel .form h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 1.5rem;
+    color: #495057;
+}
+
+.left-panel .form .form-control {
     border-radius: 5px;
+    border: 1px solid #ced4da;
+    margin-bottom: 15px;
+    padding: 10px;
+    font-size: 1rem;
 }
 
-.form button {
-    background-color: #007BFF;
-    color: #fff;
+.left-panel .form .form-control:focus {
+    border-color: #80bdff;
+    box-shadow: 0 0 0 0.25rem rgba(0, 123, 255, 0.25);
+}
+
+.left-panel .form textarea {
+    border-radius: 5px;
+    border: 1px solid #ced4da;
+    margin-bottom: 15px;
+    padding: 10px;
+    font-size: 1rem;
+    width: 100%;
+    resize: vertical;
+}
+
+.left-panel .form button {
+    width: 100%;
+    padding: 10px;
+    font-size: 1.1rem;
+    background-color: #007bff;
+    color: #ffffff;
+    border: none;
+    border-radius: 5px;
     cursor: pointer;
-    font-weight: bold;
+    transition: background-color 0.3s;
 }
 
-.form button:hover {
+.left-panel .form button:hover {
     background-color: #0056b3;
 }
 
-/* Panel derecho */
+/* Sección derecha */
 .right-panel {
-    width: 70%;
-    padding: 20px;
+    margin-top: 20px;
 }
 
 .right-panel h2 {
+    text-align: center;
     margin-bottom: 20px;
+    font-size: 1.5rem;
+    color: #495057;
 }
 
 .media-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 10px;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 15px;
     margin-bottom: 20px;
 }
 
 .media-item {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border: 1px solid #ccc;
-    height: 80px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
     text-align: center;
-    font-size: 18px;
-    border-radius: 5px;
-    background-color: #f9f9f9;
-}
-
-.media-item.checked {
-    background-color: #d4edda;
-    color: #155724;
-}
-
-.media-item.loading {
-    background-color: rgb(255 255 200 / 50%);
-    color: #856404;
 }
 
 .media-item img {
     max-width: 100%;
-    max-height: 100%;
-    object-fit: cover;
-}
-
-/* Barra de progreso */
-.progress-bar {
-    width: 100%;
-    height: 25px;
-    background-color: #eee;
     border-radius: 5px;
-    overflow: hidden;
-    position: relative;
+    margin-bottom: 10px;
 }
 
-.progress {
-    height: 100%;
-    background-color: #007BFF;
-    color: #fff;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    white-space: nowrap;
+.media-item.checked {
+    background-color: #d4edda;
+}
+
+.media-item.loading {
+    background-color: #fff3cd;
+}
+
+.progress-bar {
+    background-color: #28a745;
+    height: 20px;
+    text-align: center;
+    line-height: 20px;
+    color: #ffffff;
     font-weight: bold;
 }

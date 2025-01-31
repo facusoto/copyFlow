@@ -22,18 +22,37 @@
 </head>
 <body>
     <h2>Progreso de la Copia de Archivos</h2>
+    <button onclick="iniciarCopia()">Iniciar Copia</button>
     <div id="barra_progreso">
         <div id="progreso">0%</div>
     </div>
 
     <script type="text/javascript">
-        $(document).ready(function(){
-            var socket = io.connect('http://' + document.domain + ':' + location.port);
-            socket.on('progreso', function(data) {
-                $('#progreso').css('width', data.porcentaje + '%');
-                $('#progreso').text(data.porcentaje + '%');
-            });
+        var socket = io('http://127.0.0.1:5000');
+
+        socket.on('connect', function() {
+            console.log('✅ Conectado al servidor Socket.IO');
         });
+
+        socket.on('connect_error', function(error) {
+            console.error('❌ Error de conexión a Socket.IO:', error);
+        });
+
+        socket.on('disconnect', function(reason) {
+            console.warn('⚠️ Desconectado de Socket.IO:', reason);
+        });
+
+        socket.on('progreso', function(data) {
+            console.log('Progreso recibido:', data.porcentaje + '%');  // Agrega esto para debug
+            $('#progreso').css('width', data.porcentaje + '%');
+            $('#progreso').text(data.porcentaje + '%');
+        });
+
+        function iniciarCopia() {
+            fetch('/iniciar_copia')
+                .then(response => console.log('Copia iniciada:', response))
+                .catch(error => console.error('Error iniciando copia:', error));
+        }
     </script>
 </body>
 </html>
