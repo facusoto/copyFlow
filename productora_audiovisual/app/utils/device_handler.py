@@ -1,11 +1,10 @@
 import os
 import psutil
 import time
-from utils.file_handler import copiar_y_verificar
 from plyer import notification
 import webbrowser
 
-def manejar_unidades_nuevas():
+def manejar_unidades_nuevas(socketio):
     unidades_previas = set(part.device for part in psutil.disk_partitions())
     print(f"Unidades iniciales: {unidades_previas}")
 
@@ -18,9 +17,7 @@ def manejar_unidades_nuevas():
             for unidad in nuevas_unidades:
                 print(f"Nueva unidad detectada: {unidad}")
                 notificar_dispositivo_detectado()
-
-            # consultar_datos()
-            # copiar_y_verificar()
+                socketio.emit("nuevo_dispositivo", {"unidad": unidad})
 
             unidades_previas = unidades_actuales
 

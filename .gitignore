@@ -1,3 +1,4 @@
 *.ai
 productora_audiovisual/app/utils/vericopy
 **/__pycache__/
+**/*.exe

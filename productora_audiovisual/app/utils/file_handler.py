@@ -3,27 +3,26 @@ import shutil
 
 # Tipos de extensión a copiar
 extensiones_video = ('.mp4', '.mov', '.avi', '.mkv', '.mxf')
+medios = {}
 
-def copiar_y_verificar(origen, destino, extension, socketio):
-    if not os.path.exists(destino):
-        os.makedirs(destino)
-    
-    medios = {}
+def encontrar_videos(origen):
     i = 0
     for root, dirs, files in os.walk(origen):
         for file in files:
             if file.lower().endswith(extensiones_video):
                 i += 1
-                medios[i] = [os.path.join(root, file), file]
+                # Convertir la ruta a absoluta y reemplazar backslashes con slashes compatibles
+                ruta_absoluta = os.path.abspath(os.path.join(root, file))
+                ruta_ffmpeg = ruta_absoluta.replace("\\", "/")  # FFmpeg en Windows prefiere slashes
 
-    total_medios = len(medios)
+                medios[i] = [ruta_ffmpeg, file]
 
-    if total_medios == 0:
-        print('No hay archivos para copiar')
-        return
+    return medios
 
+def copiar_videos(lista_medios, total_medios, destino, socketio):
+    # Proceso de copiado
     print('Copiando medios')
-    for key, value in medios.items():
+    for key, value in lista_medios.items():
         medio_path = value[0]
         medio = value[1]
         porcentaje = int((key / total_medios) * 100)
@@ -44,5 +43,4 @@ def copiar_y_verificar(origen, destino, extension, socketio):
         socketio.sleep(0.1)
 
 if __name__ == "__main__":
-    # Prueba de funcionamiento
-    copiar_y_verificar('J:\\BPAV\\CLPR', 'D:\\Prueba_copiado', '.mp4')
+    pass

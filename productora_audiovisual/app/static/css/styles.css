@@ -1,0 +1,83 @@
+/* Estilos generales */
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #f8f9fa;
+    margin: 0;
+    padding: 0;
+}
+
+/* Contenedor principal */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Sección izquierda */
+.left-panel {
+    background-color: #FFAF20;
+    border-radius: 5px;
+    border: 2px solid;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+}
+
+/* Logo */
+.left-panel h2 {
+    text-align: center;
+    font-weight: bold;
+    color: #ffffff;
+}
+
+/* Formulario */
+.left-panel .form {
+    margin-top: 20px;
+}
+
+.left-panel .form textarea {
+    border-radius: 5px;
+    border: 1px solid #ced4da;
+    margin-bottom: 15px;
+    padding: 10px;
+    font-size: 1rem;
+    width: 100%;
+    resize: vertical;
+}
+
+.left-panel .form button {
+    width: 100%;
+    padding: 10px;
+    font-size: 1.1rem;
+    background-color: #007bff;
+    color: #ffffff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.left-panel .form button:hover {
+    background-color: #0056b3;
+}
+
+/* Sección derecha */
+.right-panel {
+    background-color: #F0F3ED;
+    border-radius: 5px;
+    border: 2px solid;
+}
+
+.right-panel h2 {
+    margin: 20px 0;
+}
+
+.progress-bar {
+    background-color: #28a745;
+    text-align: center;
+    line-height: 20px;
+    color: #ffffff;
+    font-weight: bold;
+}
+
+.progress-bar-parent {
+    height: 30px;
+}

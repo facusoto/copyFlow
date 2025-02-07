@@ -7,45 +7,119 @@
     <!-- Enlace al CSS de Bootstrap 5 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <!-- Enlace a tu archivo CSS personalizado -->
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="{{ url_for('static',filename='css/styles.css') }}"> 
 </head>
 <body>
-    <div class="container py-5">
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <img src="logo.png" alt="Logo" height="40">
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Calendario</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Configuración</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <div class="container py-4">
         <div class="row">
             <!-- Sección izquierda -->
             <div class="col-md-4">
                 <div class="card">
-                    <div class="card-body">
+                    <div class="card-body left-panel">
                         <h2 class="card-title">Datos del proyecto</h2>
-                        <form>
+                        <form method="POST" action="" class="form">
                             <div class="mb-3">
                                 <label for="campo1" class="form-label">Fecha</label>
-                                <input type="date" class="form-control" id="campo1">
+                                <input type="date" class="form-control" id="campo1" name="fecha">
                             </div>
                             <div class="mb-3">
-                                <label for="campo2" class="form-label">Institución</label>
-                                <select class="form-select" aria-label="Default select example" id="campo2">
+                                <label for="campo2" class="form-label">Ubicación</label>
+                                <input class="form-control" list="datalistOptions" id="exampleDataList" placeholder="Escribí para buscar...">
+                                <datalist id="datalistOptions" class="campo2">
+                                    <option value="Agronomía">
+                                    <option value="Almagro">
+                                    <option value="Balvanera">
+                                    <option value="Barracas">
+                                    <option value="Belgrano">
+                                    <option value="Boedo">
+                                    <option value="Caballito">
+                                    <option value="Chacarita">
+                                    <option value="Coghlan">
+                                    <option value="Colegiales">
+                                    <option value="Constitución">
+                                    <option value="Flores">
+                                    <option value="Floresta">
+                                    <option value="La Boca">
+                                    <option value="La Paternal">
+                                    <option value="Liniers">
+                                    <option value="Mataderos">
+                                    <option value="Monte Castro">
+                                    <option value="Montserrat">
+                                    <option value="Nueva Pompeya">
+                                    <option value="Nuñez">
+                                    <option value="Palermo">
+                                    <option value="Parque Avellaneda">
+                                    <option value="Parque Chacabuco">
+                                    <option value="Parque Chas">
+                                    <option value="Parque Patricios">
+                                    <option value="Puerto Madero">
+                                    <option value="Recoleta">
+                                    <option value="Retiro">
+                                    <option value="Saavedra">
+                                    <option value="San Cristóbal">
+                                    <option value="San Nicolás">
+                                    <option value="San Telmo">
+                                    <option value="Versalles">
+                                    <option value="Villa Crespo">
+                                    <option value="Villa Devoto">
+                                    <option value="Villa General Mitre">
+                                    <option value="Villa Lugano">
+                                    <option value="Villa Luro">
+                                    <option value="Villa Ortúzar">
+                                    <option value="Villa Pueyrredón">
+                                    <option value="Villa Real">
+                                    <option value="Villa Riachuelo">
+                                    <option value="Villa Santa Rita">
+                                    <option value="Villa Soldati">
+                                    <option value="Villa Urquiza">
+                                    <option value="Villa del Parque">
+                                    <option value="Vélez Sarsfield">
+                                </datalist>
+                            </div>
+                            <div class="mb-3">
+                                <label for="campo3" class="form-label">Institución</label>
+                                <select class="form-select" id="campo3" name="institucion">
                                     <option selected>Elegir una opción</option>
-                                    <option value="1">Policia</option>
-                                    <option value="2">Bomberos</option>
-                                    <option value="3">Secretaria de deportes</option>
-                                    <option value="4">Jorge Macri</option>
-                                    <option value="5">DIR</option>
-                                    <option value="6">Policia</option>
-                                    <option value="7">Otro</option>
-                                  </select>
+                                    <option value="Policia">Policia</option>
+                                    <option value="Bomberos">Bomberos</option>
+                                    <option value="Secretaria de deportes">Secretaria de deportes</option>
+                                    <option value="Jorge Macri">Jorge Macri</option>
+                                    <option value="DIR">DIR</option>
+                                    <option value="Otro">Otro</option>
+                                </select>
                             </div>
                             <div class="mb-3">
-                                <label for="campo3" class="form-label">¿Que se fue a grabar?</label>
-                                <input type="text" class="form-control" id="campo3">
+                                <label for="campo4" class="form-label">Tipo de material</label>
+                                <input type="text" class="form-control" id="campo4" name="tipo_material">
                             </div>
                             <div class="mb-3">
-                                <label for="campo4" class="form-label">Campo 4</label>
-                                <input type="text" class="form-control" id="campo4">
+                                <label for="campo5" class="form-label">Título</label>
+                                <input type="text" class="form-control" id="campo5" name="titulo">
                             </div>
                             <div class="mb-3">
-                                <label for="descripcion" class="form-label">Descripción</label>
-                                <textarea class="form-control" id="descripcion" rows="3"></textarea>
+                                <label for="campo6" class="form-label">Descripción</label>
+                                <textarea class="form-control" id="campo6" name="observaciones" rows="3"></textarea>
                             </div>
                             <button type="submit" class="btn btn-primary w-100">Comenzar Copiado</button>
                         </form>
@@ -54,7 +128,7 @@
             </div>
 
             <!-- Sección derecha -->
-            <div class="col-md-8">
+            <div class="col-md-8 right-panel">
                 <h2>Medios encontrados</h2>
                 <div class="row row-cols-3 row-cols-md-4 g-3">
                     <div class="col">
@@ -86,14 +160,9 @@
                         </div>
                     </div>
                     <!-- Repite los bloques anteriores para cada medio adicional -->
-                    <div class="col">
-                        <div class="card">
-                            <img src="placeholder.png" class="card-img-top" alt="Media">
-                        </div>
-                    </div>
                     <!-- ... -->
                 </div>
-                <div class="progress mt-3">
+                <div class="progress mt-3 progress-bar-parent">
                     <div class="progress-bar" role="progressbar" style="width: 30%;" aria-valuenow="30" aria-valuemin="0" aria-valuemax="100">30%</div>
                 </div>
             </div>
@@ -102,5 +171,7 @@
 
     <!-- Enlace al JS de Bootstrap 5 -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1pPzHOqR3Kj3Rz6p+M6Kj8a1L+7p+5KkNf2+7p3+7p+7" crossorigin="anonymous"></script>
+    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+    <script src="{{ url_for('static',filename='js/scripts.js') }}"></script>
 </body>
 </html>
