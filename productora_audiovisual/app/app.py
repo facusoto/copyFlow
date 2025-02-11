@@ -1,10 +1,12 @@
 from flask import Flask, render_template, request, redirect, url_for
 from flask_socketio import SocketIO, emit
 from flask_sqlalchemy import SQLAlchemy
-from tasks import test_encontrar_videos
+from utils.path_handler import crear_carpeta_destino
+from utils.file_handler import encontrar_videos, copiar_videos
+
+# Importar gevent y parchearlo
 from gevent import monkey
 monkey.patch_all()
-
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///producciones.db'
@@ -31,6 +33,12 @@ with app.app_context():
 # Ruta para manejar el formulario
 @app.route('/', methods=["GET", "POST"])
 def index():
+    return render_template('index.html')
+
+
+# Ruta para iniciar el copiado de archivos
+@app.route('/copiar', methods=["POST"])
+def copiar():
     if request.method == "POST":
         print("Datos recibidos del formulario:", request.form)  # Depuración
 
@@ -54,25 +62,18 @@ def index():
             db.session.add(nueva_produccion)
             db.session.commit()
 
+            # Crear carpeta de destino
+            carpeta_destino = crear_carpeta_destino(fecha, ubicacion, institucion, titulo)
+            copiar_videos(lista_medios, total_medios, carpeta_destino, socketio)
+
             print("Datos guardados correctamente.")  # Mensaje de éxito
             return redirect(url_for("index"))
-
-    return render_template('index.html')
-
-
-# Ruta para iniciar el copiado de archivos
-@app.route('/iniciar_copia')
-def iniciar_copia():
-    origen = 'F:\\BPAV\\CLPR'
-    destino = 'E:\\Prueba_copiado'
-    extension = '.mp4'
-    # threading.Thread(target=copiar_y_verificar, args=(origen, destino, extension, socketio)).start()
-    return 'Copia iniciada'
 
 
 @socketio.on('connect')
 def handle_connect():
     print("Un cliente se ha conectado")
+
 
 if __name__ == '__main__':
     socketio.run(app, debug=True)

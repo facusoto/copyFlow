@@ -64,6 +64,7 @@ body {
     background-color: #F0F3ED;
     border-radius: 5px;
     border: 2px solid;
+    padding: 0 20px;
 }
 
 .right-panel h2 {
@@ -78,6 +79,51 @@ body {
     font-weight: bold;
 }
 
-.progress-bar-parent {
+.progress-bar-parent{
     height: 30px;
+    background-color: #fff;
+    margin-bottom: 1rem;
+}
+
+.search-media {
+    margin-bottom: 1rem;
+}
+
+.external-hard-drive {
+    width: 50px;
+}
+
+.external-device {
+    user-select: none;
+}
+
+.external-device:hover {
+    background-color: #f5f5f5;
+    border: 2px solid #3E7DC0;
+    border-radius: 5px;
+    transition: .1s ease;
+    cursor: pointer;
+}
+
+.device-name {
+    margin: 10px 0 0 0;
+}
+
+.media-container {
+    overflow-x: hidden!important;
+    height: 0px;
+}
+
+.media-container>div {
+    margin-right: 5px;
+}
+
+::-webkit-scrollbar {
+    width: .5em;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: darkgrey;
+    outline: 1px solid slategrey;
+    border-radius: 5px;
 }
