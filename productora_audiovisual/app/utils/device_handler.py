@@ -5,10 +5,14 @@ def manejar_unidades_nuevas(unidades_ignoradas, socketio):
     print(f"Unidades iniciales: {total_unidades}")
 
     for unidad in unidades_ignoradas:
-        total_unidades.remove(unidad)
+        total_unidades.discard(unidad)  # Usa discard en lugar de remove para evitar errores
     
     print(f"Unidades finales: {total_unidades}")
-    socketio.emit('unidades', {'unidades': total_unidades})
+
+    # Emitir los dispositivos detectados
+    socketio.emit('unidades', {'unidades': list(total_unidades)})
+
+    return total_unidades  # Retornar las unidades encontradas
 
 if __name__ == "__main__":
     manejar_unidades_nuevas()

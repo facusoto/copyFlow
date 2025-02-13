@@ -1,5 +1,5 @@
-from flask import Flask, render_template, request, redirect, url_for, session
-from flask_socketio import SocketIO, emit
+from flask import Flask, render_template, request, redirect, url_for, session, jsonify
+from flask_socketio import SocketIO
 from flask_sqlalchemy import SQLAlchemy
 from utils.path_handler import crear_carpeta_destino
 from utils.file_handler import encontrar_videos, copiar_videos
@@ -15,9 +15,6 @@ app.config['SECRET_KEY'] = 'secret!'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///producciones.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-socketio = SocketIO(app)  # Inicializar SocketIO
-db = SQLAlchemy(app)  # Inicializar SQLAlchemy
-
 # Función para cargar configuración
 def load_config():
     with open("config.json", "r") as f:
@@ -25,6 +22,9 @@ def load_config():
     
 # Variable global para la configuración
 config = load_config()
+
+socketio = SocketIO(app)  # Inicializar SocketIO
+db = SQLAlchemy(app)  # Inicializar SQLAlchemy
 
 # Definir el modelo de la base de datos
 class Produccion(db.Model):
@@ -51,9 +51,13 @@ def index():
 @app.route('/identificar_dispositivos', methods=["POST"])
 def identificar_dispositivos():
     # Encontrar las unidades nuevas
-    session['unidades'] = manejar_unidades_nuevas(config['ignore_devices'], socketio)
+    unidades_detectadas = manejar_unidades_nuevas(config['ignore_partitions'], socketio)
 
-    return "Unidades identificadas"
+    # Emitir la señal de dispositivos detectados al frontend
+    socketio.emit('unidades', {'unidades': list(unidades_detectadas)})
+
+    # Devolver la lista de unidades encontradas como respuesta JSON
+    return jsonify({'unidades': list(unidades_detectadas)})
 
 
 # Ruta para iniciar el copiado de archivos
@@ -76,38 +80,40 @@ def iniciar_dispositivo():
 # Ruta para iniciar el copiado de archivos
 @app.route('/copiar', methods=["POST"])
 def copiar():
-    if request.method == "POST":
-        print("Datos recibidos del formulario:", request.form)  # Depuración
+    datos = request.form
 
-        fecha = request.form.get("fecha")
-        ubicacion = request.form.get("ubicacion")
-        institucion = request.form.get("institucion")
-        tipo_material = request.form.get("tipo_material")
-        titulo = request.form.get("titulo")
-        observaciones = request.form.get("observaciones")
+    # Validar que los campos requeridos estén completos
+    campos_requeridos = ["fecha", "titulo", "institucion"]
+    for campo in campos_requeridos:
+        if not datos.get(campo):
+            return jsonify({"error": f"El campo {campo} es obligatorio"}), 400
 
-        # Verificación simple de datos
-        if fecha and titulo:
-            nueva_produccion = Produccion(
-                fecha=fecha,
-                ubicacion=ubicacion,
-                institucion=institucion,
-                tipo_material=tipo_material,
-                titulo=titulo,
-                observaciones=observaciones
-            )
-            db.session.add(nueva_produccion)
-            db.session.commit()
+    # Guardar en la base de datos
+    nueva_produccion = Produccion(
+        fecha=datos["fecha"],
+        ubicacion=datos.get("ubicacion"),
+        institucion=datos["institucion"],
+        tipo_material=datos.get("tipo_material"),
+        titulo=datos["titulo"],
+        observaciones=datos.get("observaciones")
+    )
+    db.session.add(nueva_produccion)
+    db.session.commit()
 
-            # Crear carpeta de destino
-            carpeta_destino = crear_carpeta_destino(config['home_directory'],fecha, institucion, titulo)
+    # Crear carpeta de destino
+    carpeta_destino = crear_carpeta_destino(
+        config['home_directory'], datos["fecha"], datos["institucion"], datos["titulo"]
+    )
 
-            # Recuperar los videos desde la sesión del usuario
-            medios_encontrados = session.get('medios_encontrados', {})
-            copiar_videos(medios_encontrados, len(medios_encontrados), carpeta_destino, socketio)
+    # Recuperar los medios desde la sesión
+    medios_encontrados = session.get('medios_encontrados', [])
+    if not medios_encontrados:
+        return jsonify({"error": "No hay medios para copiar"}), 400
 
-            print("Datos guardados correctamente.")
-            return redirect(url_for("index"))
+    # Iniciar copiado con actualización en tiempo real
+    copiar_videos(medios_encontrados, len(medios_encontrados), carpeta_destino, socketio)
+
+    return jsonify({"message": "Proceso de copiado iniciado"}), 200
 
 
 @socketio.on('connect')
