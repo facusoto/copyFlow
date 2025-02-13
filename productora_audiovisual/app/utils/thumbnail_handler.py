@@ -1,5 +1,6 @@
-import subprocess
 import os
+import subprocess
+import multiprocessing
 
 ffmpeg_path = r"C:\Users\Usuario\Desktop\copyFlow\productora_audiovisual\app\utils\ffmpeg\ffmpeg.exe"
 
@@ -17,12 +18,19 @@ def extraer_primer_frame(video_path, output_dir, video_name, socketio=None):
     ]
     
     subprocess.run(comando, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)  # Espera a que termine
-    socketio.emit('frame', {'frame': f"Extracción hecha para {video_name}!"})
-    socketio.sleep(0.1)
+    
+    if socketio:
+        socketio.emit('frame', {'frame': f"Extracción hecha para {video_name}!"})
+        socketio.sleep(0.1)
 
-def generar_thumbnails_en_subproceso(videos, output_dir):
-    """Ejecuta la generación de thumbnails en un proceso separado."""
+def generar_thumbnails(videos, output_dir):
+    """Genera thumbnails en el mismo proceso (bloqueante)."""
     os.makedirs(output_dir, exist_ok=True)
 
     for key, value in videos.items():
         extraer_primer_frame(value[0], output_dir, f"{value[1]}_thumb")
+
+def generar_thumbnails_en_subproceso(videos, output_dir):
+    """Ejecuta la generación de thumbnails en un proceso separado (NO bloqueante)."""
+    proceso = multiprocessing.Process(target=generar_thumbnails, args=(videos, output_dir))
+    proceso.start()
