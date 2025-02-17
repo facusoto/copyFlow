@@ -72,7 +72,7 @@ def iniciar_dispositivo():
 
         # Verificar si se encontraron medios y generar thumbnails
         session['medios_encontrados'] = medios_encontrados  # Guardar en sesión
-        generar_y_enviar_thumbnails(medios_encontrados, socketio)
+        # generar_y_enviar_thumbnails(medios_encontrados, socketio)
 
         response = jsonify({
             'status': 'success',

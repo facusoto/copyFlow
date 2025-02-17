@@ -1,9 +1,35 @@
 /* Estilos generales */
 body {
-    font-family: 'Inter', sans-serif;
+    font-family: 'Poppins', sans-serif;
     background-color: #f8f9fa;
     margin: 0;
     padding: 0;
+}
+
+@keyframes indeterminate-progress-bar {
+    0% {
+      transform: translateX(0) scaleX(0);
+    }
+    40% {
+      transform: translateX(0) scaleX(0.4);
+    }
+    100% {
+      transform: translateX(100%) scaleX(0.5);
+    }
+}
+
+.indeterminate-progress-bar {
+    width: -webkit-fill-available;
+    bottom: 0;
+    left: 0;
+    height: 5px;
+    border-radius: 0px;
+}
+
+.indeterminate-progress {
+    width: 100%;
+    animation: indeterminate-progress-bar 0.5s linear, indeterminate-progress-bar 1s linear infinite 0.5s;
+    transform-origin: 0 50%;
 }
 
 /* Contenedor principal */
@@ -95,6 +121,7 @@ body {
 
 .external-device {
     user-select: none;
+    border: 2px solid transparent;
 }
 
 .external-device:hover {
@@ -121,6 +148,12 @@ body {
 .card-body {
     aspect-ratio: 16 / 9;
     background-size: cover;
+}
+
+.video-name {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .selectable-device.selected {
