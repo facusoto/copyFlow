@@ -3,7 +3,7 @@ from flask_socketio import SocketIO
 from flask_sqlalchemy import SQLAlchemy
 from utils.path_handler import crear_carpeta_destino
 from utils.file_handler import encontrar_videos, copiar_videos
-from utils.thumbnail_handler import generar_thumbnails_en_subproceso
+from utils.thumbnail_handler import generar_y_enviar_thumbnails
 from utils.device_handler import manejar_unidades_nuevas
 import json
 
@@ -51,7 +51,7 @@ def index():
 @app.route('/identificar_dispositivos', methods=["POST"])
 def identificar_dispositivos():
     # Encontrar las unidades nuevas
-    unidades_detectadas = manejar_unidades_nuevas(config['ignore_partitions'], socketio)
+    unidades_detectadas = manejar_unidades_nuevas(config['ignore_partitions'])
 
     # Emitir la señal de dispositivos detectados al frontend
     socketio.emit('unidades', {'unidades': list(unidades_detectadas)})
@@ -72,9 +72,18 @@ def iniciar_dispositivo():
 
         # Verificar si se encontraron medios y generar thumbnails
         session['medios_encontrados'] = medios_encontrados  # Guardar en sesión
-        generar_thumbnails_en_subproceso(medios_encontrados, config['default_thumbnail_directory'])
+        generar_y_enviar_thumbnails(medios_encontrados, socketio)
 
-        return "Proceso iniciado"
+        response = jsonify({
+            'status': 'success',
+            'message': 'Proceso iniciado',
+            'data': medios_encontrados  # Puedes incluir datos relevantes si es necesario
+        })
+
+        response.headers['Content-Type'] = 'application/json; charset=utf-8'
+
+        # Devolver respuesta JSON
+        return response
 
 
 # Ruta para iniciar el copiado de archivos

@@ -37,7 +37,6 @@ socket.on('unidades', function(data) {
     agregarDispositivosAlContenedor(data.unidades);
 });
 
-// Función para agregar dispositivos al contenedor
 function agregarDispositivosAlContenedor(unidades) {
     let container = document.getElementById("device-container");
     if (!container) {
@@ -59,8 +58,8 @@ function agregarDispositivosAlContenedor(unidades) {
         <div class="col w-25">
             <div class="card">
                 <div class="card-body text-center external-device selectable-device">
-                    <img src="external-hard-drive.png" alt="Dispositivo" class="external-hard-drive">
-                    <p class="device-name">${unidad}</p>
+                    <img src="${unidad.imagen}" alt="Dispositivo" class="external-hard-drive">
+                    <p class="device-name">${unidad.nombre}</p>
                 </div>
             </div>
         </div>
@@ -69,15 +68,21 @@ function agregarDispositivosAlContenedor(unidades) {
     });
 }
 
-// Indica el dispositivo seleccionado
-document.querySelectorAll('.selectable-device').forEach(device => {
-    device.addEventListener('click', function() {
+// Delegación de eventos
+document.getElementById('device-container').addEventListener('click', function(event) {
+    // Verificar si el clic fue en un dispositivo seleccionable
+    if (event.target.closest('.selectable-device')) {
+        let device = event.target.closest('.selectable-device');
+        
+        // Quitar la clase 'selected' de todos los dispositivos
         document.querySelectorAll('.selectable-device').forEach(d => d.classList.remove('selected'));
-        this.classList.add('selected');
+        
+        // Agregar la clase 'selected' al dispositivo clicado
+        device.classList.add('selected');
         
         // Almacenar el nombre del dispositivo en el input oculto
-        document.getElementById('selected-device').value = this.querySelector('.device-name').innerText;
-    });
+        document.getElementById('selected-device').value = device.querySelector('.device-name').innerText;
+    }
 });
 
 // Validar que se haya seleccionado un dispositivo y luego buscar los medios
@@ -98,8 +103,10 @@ function validateAndSearchMedia(event) {
         .then(response => response.json())
         .then(data => {
             console.log('Respuesta del servidor:', data);
-            if (data.medios_encontrados && data.medios_encontrados.length > 0) {
-                renderMediaList(data.medios_encontrados);
+        
+            // Si los datos están en un diccionario y no en una lista
+            if (data.data && typeof data.data === 'object') {
+                renderMediaList(Object.values(data.data));  // Convertir el diccionario a una lista
             }
             document.getElementById('menu-container').classList.add('d-none');
             document.getElementById('content-container').classList.remove('d-none');
@@ -112,20 +119,39 @@ function validateAndSearchMedia(event) {
 function renderMediaList(medios) {
     const mediaContainer = document.querySelector('.media-container .row');
     mediaContainer.innerHTML = '';
-    
-    medios.forEach(() => {
+
+    // Definir un contador para los id
+    let idCounter = 1;
+
+    medios.forEach(media => {
+        const fileName = media[1];
         const mediaElement = document.createElement('div');
+
         mediaElement.classList.add('col');
         mediaElement.innerHTML = `
             <div class="card">
-                <div class="card-body text-center">
-                    <span class="fs-1 text-success">✓</span>
+                <div class="card-body text-center" id="media-${idCounter}">
+                    <span class="fs-1 text-success" id="media-process-${idCounter}"></span>
                 </div>
             </div>
+            <p class="mb-0 fs-6 text-center text-body">${fileName}</p>
         `;
+
+        // Incrementar el id para la siguiente iteración
+        idCounter++;
+
         mediaContainer.appendChild(mediaElement);
     });
 }
+
+// Escuchar la creacion de thumbnails y agregarlas al frontend
+socket.on("frame", function (data) {
+    console.log("Datos recibidos", data.data);
+    // console.log("Frame recibido para el elemento:", data.video_id);
+    // let videoCard = document.getElementById(`media-${data.video_id}`);
+    // videoCard.style.backgroundImage = `url(${data.imagen_base64})`;
+});
+
 
 // Agregar evento al botón con id "search-media"
 document.getElementById('search-media').addEventListener('click', validateAndSearchMedia);

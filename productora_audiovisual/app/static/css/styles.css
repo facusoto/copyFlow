@@ -120,6 +120,7 @@ body {
 
 .card-body {
     aspect-ratio: 16 / 9;
+    background-size: cover;
 }
 
 .selectable-device.selected {
@@ -145,4 +146,8 @@ body {
 
 .selected:hover {
     transition: .2s ease;
+}
+
+img {
+    user-select: none;
 }

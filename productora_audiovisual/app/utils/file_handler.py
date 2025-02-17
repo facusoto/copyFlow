@@ -9,7 +9,7 @@ def encontrar_videos(origen):
     i = 0
     for root, dirs, files in os.walk(origen):
         for file in files:
-            if file.lower().endswith(extensiones_video):
+            if file.lower().endswith(extensiones_video) and not file.lower().startswith('.'):
                 i += 1
                 # Convertir la ruta a absoluta y reemplazar backslashes con slashes compatibles
                 ruta_absoluta = os.path.abspath(os.path.join(root, file))
