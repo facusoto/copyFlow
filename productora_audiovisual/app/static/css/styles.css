@@ -38,6 +38,16 @@ body {
     margin: 0 auto;
 }
 
+.form-mask {
+    background-color: #0056b3;
+    transition: opacity 0.5s ease;
+    opacity: 1;
+}
+
+.form-mask.d-none {
+    opacity: 0;
+}
+
 /* Sección izquierda */
 .left-panel {
     background-color: #FFAF20;

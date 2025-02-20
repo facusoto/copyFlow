@@ -1,5 +1,4 @@
 {
-    "home_directory": "E:",
-    "default_thumbnail_directory": "C:/thumbnails",
+    "home_directory": "C:/",
     "ignore_partitions": ["C:\\"]
 }

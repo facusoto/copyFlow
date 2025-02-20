@@ -100,14 +100,16 @@ def copiar():
     # Guardar en la base de datos
     nueva_produccion = Produccion(
         fecha=datos["fecha"],
-        ubicacion=datos.get("ubicacion"),
+        ubicacion=datos["ubicacion"],
         institucion=datos["institucion"],
-        tipo_material=datos.get("tipo_material"),
+        tipo_material=datos["tipo_material"],
         titulo=datos["titulo"],
-        observaciones=datos.get("observaciones")
+        observaciones=datos["observaciones"]
     )
     db.session.add(nueva_produccion)
     db.session.commit()
+
+    print('Datos guardados en la base de datos')
 
     # Crear carpeta de destino
     carpeta_destino = crear_carpeta_destino(
@@ -116,11 +118,13 @@ def copiar():
 
     # Recuperar los medios desde la sesión
     medios_encontrados = session.get('medios_encontrados', [])
+    total_medios = int(len(medios_encontrados))
+
     if not medios_encontrados:
         return jsonify({"error": "No hay medios para copiar"}), 400
 
     # Iniciar copiado con actualización en tiempo real
-    copiar_videos(medios_encontrados, len(medios_encontrados), carpeta_destino, socketio)
+    copiar_videos(medios_encontrados, total_medios, carpeta_destino, socketio)
 
     return jsonify({"message": "Proceso de copiado iniciado"}), 200
 

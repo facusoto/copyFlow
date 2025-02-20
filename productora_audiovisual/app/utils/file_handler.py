@@ -25,7 +25,7 @@ def copiar_videos(lista_medios, total_medios, destino, socketio):
     for key, value in lista_medios.items():
         medio_path = value[0]
         medio = value[1]
-        porcentaje = int((key / total_medios) * 100)
+        porcentaje = int((int(key) / total_medios) * 100)
         print(f'Copiado el {porcentaje}%, archivo {key} de {total_medios}')
 
         print(medio_path, medio)
@@ -39,7 +39,7 @@ def copiar_videos(lista_medios, total_medios, destino, socketio):
         shutil.copy2(ruta_origen, ruta_destino)
         print(f'archivo {medio} copiado en {ruta_destino}')
 
-        socketio.emit('progreso', {'porcentaje': porcentaje})
+        socketio.emit('progreso', {'porcentaje': [porcentaje, key]})
         socketio.sleep(0.1)
 
 if __name__ == "__main__":

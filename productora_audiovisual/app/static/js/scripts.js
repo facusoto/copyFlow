@@ -39,19 +39,19 @@ socket.on('unidades', function(data) {
 });
 
 function agregarDispositivosAlContenedor(unidades) {
-    let container = document.getElementById("device-container");
-    if (!container) {
+    let deviceContainer = document.getElementById("device-container");
+    if (!deviceContainer) {
         console.error("No se encontró el contenedor de dispositivos.");
         return;
     }
     
     if (unidades.length == 0) {
-        container.innerHTML = '<p class="text-center">No se encontraron dispositivos.</p>';
+        deviceContainer.innerHTML = '<p class="text-center">No se encontraron dispositivos.</p>';
         return;
     }
 
     // Limpiar el contenedor antes de agregar nuevos dispositivos
-    container.innerHTML = '';
+    deviceContainer.innerHTML = '';
 
     // Iterar sobre cada dispositivo encontrado y agregarlo al contenedor
     unidades.forEach((unidad) => {
@@ -65,7 +65,7 @@ function agregarDispositivosAlContenedor(unidades) {
             </div>
         </div>
         `;
-        container.innerHTML += deviceElement;
+        deviceContainer.innerHTML += deviceElement;
     });
 }
 
@@ -111,6 +111,8 @@ function validateAndSearchMedia(event) {
             }
             document.getElementById('menu-container').classList.add('d-none');
             document.getElementById('content-container').classList.remove('d-none');
+            document.getElementById('form-mask').classList.add('d-none');
+
         })
         .catch(error => console.error('Error en la solicitud:', error));
     }
@@ -125,6 +127,7 @@ document.getElementById('back-to-devices').addEventListener('click', function(ev
     // Cambiar los display de los contenedores
     document.getElementById('content-container').classList.add('d-none');
     document.getElementById('menu-container').classList.remove('d-none');
+    document.getElementById('form-mask').classList.remove('d-none');
 });
 
 // Renderizar la lista de medios encontrados
@@ -144,6 +147,9 @@ function renderMediaList(medios) {
             <div class="card">
                 <div class="card-body media-card text-center position-relative" id="media-${idCounter}">
                     <span class="fs-1 text-success" id="media-process-${idCounter}"></span>
+                    <div class="indeterminate-progress-bar progress progress-striped active position-absolute bottom-0 left-0 d-none">
+                        <div class="indeterminate-progress progress-bar" role="progressbar"></div>
+                    </div>
                 </div>
             </div>
             <p class="mb-0 fs-6 text-center text-body video-name">${fileName}</p>
@@ -159,25 +165,27 @@ function renderMediaList(medios) {
 // Seleccionamos el contenedor donde los media-cards serán agregados
 const container = document.querySelector('.media-container');
 
-// Delegado de eventos para escuchar los eventos en los media-cards
+// Escuchar el evento de hover en el contenedor y mostrar la barra de progreso
 container.addEventListener('mouseenter', (event) => {
-  if (event.target && event.target.classList.contains('media-card')) {
-    let hoverTimeout;
-
-    hoverTimeout = setTimeout(() => {
-      const progressBarHTML = `
-        <div class="indeterminate-progress-bar progress progress-striped active position-absolute bottom-0 left-0">
-          <div class="indeterminate-progress progress-bar" role="progressbar"></div>
-        </div>
-      `;
-      event.target.insertAdjacentHTML('beforeend', progressBarHTML);
-    }, 1000); // Esperamos 1 segundo de hover
-
-    event.target.addEventListener('mouseleave', () => {
-      clearTimeout(hoverTimeout); // Cancelamos el temporizador si el mouse sale antes de 1 segundo
-    });
-  }
-}, true);
+    if (event.target && event.target.classList.contains('media-card')) {
+      let hoverTimeout;
+  
+      hoverTimeout = setTimeout(() => {
+        // Buscar la barra de progreso existente
+        const progressBar = event.target.querySelector('.indeterminate-progress-bar');
+  
+        // Verificar si la barra de progreso existe y quitar la clase 'd-none' para hacerla visible
+        if (progressBar) {
+          progressBar.classList.remove('d-none');
+        }
+      }, 1000); // Esperamos 1 segundo de hover
+  
+      event.target.addEventListener('mouseleave', () => {
+        clearTimeout(hoverTimeout);
+      });
+    }
+  }, true);
+  
 
 // Escuchar la creacion de thumbnails y agregarlas al frontend
 socket.on("frame", function (data) {
@@ -191,7 +199,9 @@ socket.on("frame", function (data) {
 document.getElementById('search-media').addEventListener('click', validateAndSearchMedia);
 
 // Validar datos del formulario y copiar
-document.getElementById("copiar-btn").addEventListener("click", function () {
+document.getElementById("copiar-btn").addEventListener("click", function (event) {
+    event.preventDefault(); // Evita que el formulario se envíe y la página se recargue
+
     let form = document.getElementById("project-form");
     let formData = new FormData(form);
 
@@ -222,8 +232,34 @@ document.getElementById("copiar-btn").addEventListener("click", function () {
 
 // Escuchar progreso y actualizar la barra
 socket.on("progreso", function (data) {
-    console.log("Progreso recibido:", data.porcentaje + "%");
+    let copyProgress = data.porcentaje[0]
+    let mediaCardNumber = data.porcentaje[1];
+    console.log("Progreso recibido:", copyProgress + "%");
+
+    // Actualizar la barra de progreso
     let progressBar = document.getElementById("progress-bar");
-    progressBar.style.width = data.porcentaje + "%";
-    progressBar.textContent = data.porcentaje + "%";
+    progressBar.style.width = copyProgress + "%";
+    progressBar.textContent = copyProgress + "%";
+
+    // Agregar el spinner de carga
+    let mediaCardSelect = document.getElementById(`media-${mediaCardNumber}`);
+    let spinner = mediaCardSelect.querySelector(".indeterminate-progress-bar");
+    spinner.classList.remove('d-none');
+
+    if (copyProgress >= 1) {
+        let processElement = mediaCardSelect.querySelector(`#media-process-${mediaCardNumber}`);
+
+        // Actualizar su contenido de texto para agregar el ✓
+        if (processElement) {
+            processElement.textContent = "✓";
+        }
+
+        let lastCard = document.getElementById(`media-${mediaCardNumber - 1}`);
+        let lastSpinner = lastCard.querySelector(".indeterminate-progress-bar");
+        lastSpinner.classList.add('d-none');
+    }
+    else if (copyProgress == 100) {
+        mediaCardSelect.getElementById(`media-process-${mediaCardNumber}`).textContent = "✓";
+        spinner.classList.add('d-none');
+    }
 });
