@@ -1,21 +1,23 @@
 // Funciones de Socket.IO
 var socket = io('http://127.0.0.1:5000');
 
-socket.on('connect', function() {
+socket.on('connect', function () {
     console.log('✅ Conectado al servidor Socket.IO');
 });
 
-socket.on('connect_error', function(error) {
+socket.on('connect_error', function (error) {
     console.error('❌ Error de conexión a Socket.IO:', error);
 });
 
-socket.on('disconnect', function(reason) {
+socket.on('disconnect', function (reason) {
     console.warn('⚠️ Desconectado de Socket.IO:', reason);
 });
 
 // Función para identificar dispositivos y agregar al contenedor
 function identificarDispositivos() {
-    fetch('/identificar_dispositivos', { method: 'POST' })
+    fetch('/identificar_dispositivos', {
+            method: 'POST'
+        })
         .then(response => response.json())
         .then(data => {
             console.log("Dispositivos identificados:", data.unidades);
@@ -33,7 +35,7 @@ document.addEventListener("DOMContentLoaded", identificarDispositivos);
 document.getElementById('reload-partitions').addEventListener('click', identificarDispositivos);
 
 // Escuchar el evento de actualización de unidades en tiempo real
-socket.on('unidades', function(data) {
+socket.on('unidades', function (data) {
     console.log('Unidades encontradas (socket):', data.unidades);
     agregarDispositivosAlContenedor(data.unidades);
 });
@@ -44,7 +46,7 @@ function agregarDispositivosAlContenedor(unidades) {
         console.error("No se encontró el contenedor de dispositivos.");
         return;
     }
-    
+
     if (unidades.length == 0) {
         deviceContainer.innerHTML = '<p class="text-center">No se encontraron dispositivos.</p>';
         return;
@@ -70,17 +72,17 @@ function agregarDispositivosAlContenedor(unidades) {
 }
 
 // Delegación de eventos
-document.getElementById('device-container').addEventListener('click', function(event) {
+document.getElementById('device-container').addEventListener('click', function (event) {
     // Verificar si el clic fue en un dispositivo seleccionable
     if (event.target.closest('.selectable-device')) {
         let device = event.target.closest('.selectable-device');
-        
+
         // Quitar la clase 'selected' de todos los dispositivos
         document.querySelectorAll('.selectable-device').forEach(d => d.classList.remove('selected'));
-        
+
         // Agregar la clase 'selected' al dispositivo clicado
         device.classList.add('selected');
-        
+
         // Almacenar el nombre del dispositivo en el input oculto
         document.getElementById('selected-device').value = device.querySelector('.device-name').innerText;
     }
@@ -95,31 +97,33 @@ function validateAndSearchMedia(event) {
     } else {
         // Realizar la llamada al endpoint para buscar los medios
         fetch('/iniciar_dispositivo', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            body: new URLSearchParams({ 'selected-device': selectedDevice })
-        })
-        .then(response => response.json())
-        .then(data => {
-            console.log('Respuesta del servidor:', data);
-        
-            // Si los datos están en un diccionario y no en una lista
-            if (data.data && typeof data.data === 'object') {
-                renderMediaList(Object.values(data.data));  // Convertir el diccionario a una lista
-            }
-            document.getElementById('menu-container').classList.add('d-none');
-            document.getElementById('content-container').classList.remove('d-none');
-            document.getElementById('form-mask').classList.add('d-none');
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: new URLSearchParams({
+                    'selected-device': selectedDevice
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Respuesta del servidor:', data);
 
-        })
-        .catch(error => console.error('Error en la solicitud:', error));
+                // Si los datos están en un diccionario y no en una lista
+                if (data.data && typeof data.data === 'object') {
+                    renderMediaList(Object.values(data.data)); // Convertir el diccionario a una lista
+                }
+                document.getElementById('menu-container').classList.add('d-none');
+                document.getElementById('content-container').classList.remove('d-none');
+                document.getElementById('form-mask').classList.add('d-none');
+
+            })
+            .catch(error => console.error('Error en la solicitud:', error));
     }
 }
 
 // Volver al menú de selección de dispositivos
-document.getElementById('back-to-devices').addEventListener('click', function(event) {
+document.getElementById('back-to-devices').addEventListener('click', function (event) {
     // Eliminar los medios encontrados
     const mediaContainer = document.querySelector('.media-container .row');
     mediaContainer.innerHTML = '';
@@ -142,9 +146,10 @@ function renderMediaList(medios) {
         const fileName = media[1];
         const mediaElement = document.createElement('div');
 
-        mediaElement.classList.add('col');
+        mediaElement.classList.add('col', 'card-col');
         mediaElement.innerHTML = `
             <div class="card">
+                <input type="checkbox" name="${fileName}" class="form-check-input media-checkbox">
                 <div class="card-body media-card text-center position-relative" id="media-${idCounter}">
                     <span class="fs-1 text-success" id="media-process-${idCounter}"></span>
                     <div class="indeterminate-progress-bar progress progress-striped active position-absolute bottom-0 left-0 d-none">
@@ -163,29 +168,29 @@ function renderMediaList(medios) {
 }
 
 // Seleccionamos el contenedor donde los media-cards serán agregados
-const container = document.querySelector('.media-container');
+let container = document.querySelector('.media-container');
 
 // Escuchar el evento de hover en el contenedor y mostrar la barra de progreso
 container.addEventListener('mouseenter', (event) => {
     if (event.target && event.target.classList.contains('media-card')) {
-      let hoverTimeout;
-  
-      hoverTimeout = setTimeout(() => {
-        // Buscar la barra de progreso existente
-        const progressBar = event.target.querySelector('.indeterminate-progress-bar');
-  
-        // Verificar si la barra de progreso existe y quitar la clase 'd-none' para hacerla visible
-        if (progressBar) {
-          progressBar.classList.remove('d-none');
-        }
-      }, 1000); // Esperamos 1 segundo de hover
-  
-      event.target.addEventListener('mouseleave', () => {
-        clearTimeout(hoverTimeout);
-      });
+        let hoverTimeout;
+
+        hoverTimeout = setTimeout(() => {
+            // Buscar la barra de progreso existente
+            const progressBar = event.target.querySelector('.indeterminate-progress-bar');
+
+            // Verificar si la barra de progreso existe y quitar la clase 'd-none' para hacerla visible
+            if (progressBar) {
+                progressBar.classList.remove('d-none');
+            }
+        }, 1000); // Esperamos 1 segundo de hover
+
+        event.target.addEventListener('mouseleave', () => {
+            clearTimeout(hoverTimeout);
+        });
     }
-  }, true);
-  
+}, true);
+
 
 // Escuchar la creacion de thumbnails y agregarlas al frontend
 socket.on("frame", function (data) {
@@ -216,18 +221,19 @@ document.getElementById("copiar-btn").addEventListener("click", function (event)
 
     // Iniciar el proceso de copiado
     fetch("/copiar", {
-        method: "POST",
-        body: formData
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.error) {
-            alert(data.error);
-        } else {
-            alert("Copia iniciada con éxito");
-        }
-    })
-    .catch(error => console.error("Error:", error));
+            method: "POST",
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                alert(data.error);
+            } else {
+                var addMediaModal = new bootstrap.Modal(document.getElementById('addMediaModal'));
+                addMediaModal.show();
+            }
+        })
+        .catch(error => console.error("Error:", error));
 });
 
 // Escuchar progreso y actualizar la barra
@@ -257,9 +263,78 @@ socket.on("progreso", function (data) {
         let lastCard = document.getElementById(`media-${mediaCardNumber - 1}`);
         let lastSpinner = lastCard.querySelector(".indeterminate-progress-bar");
         lastSpinner.classList.add('d-none');
-    }
-    else if (copyProgress == 100) {
+    } else if (copyProgress == 100) {
         mediaCardSelect.getElementById(`media-process-${mediaCardNumber}`).textContent = "✓";
         spinner.classList.add('d-none');
     }
 });
+
+function girarIcono() {
+    const icono = document.getElementById('icono');
+    icono.style.animation = 'girar .3s ease';
+
+    icono.addEventListener('animationend', function () {
+        icono.style.animation = ''; // Resetea la animación para permitir otro clic
+    });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    let lastChecked = null;
+
+    // Delegar el evento click en el contenedor más cercano que ya esté cargado (document)
+    document.addEventListener('click', (e) => {
+        // Verifica si el click fue sobre un checkbox dentro de un contenedor .col
+        if (e.target && e.target.classList.contains('media-checkbox')) {
+            const container = e.target.closest('.col');  // Encuentra el contenedor más cercano al checkbox
+
+            // Si el checkbox está seleccionado, agregamos la clase, si no, la eliminamos
+            if (e.target.checked) {
+                container.classList.add('card-col-selected');
+            } else {
+                container.classList.remove('card-col-selected');
+            }
+
+            // Si no hay un checkbox previamente seleccionado, simplemente lo marcamos
+            if (!lastChecked) {
+                lastChecked = container;
+                return;
+            }
+
+            // Si se está presionando Shift, seleccionamos todos los checkboxes entre los dos
+            if (e.shiftKey) {
+                const containers = document.querySelectorAll('.col');  // Recolecta todos los contenedores disponibles
+                const start = Array.from(containers).indexOf(container);
+                const end = Array.from(containers).indexOf(lastChecked);
+
+                const [minIndex, maxIndex] = [Math.min(start, end), Math.max(start, end)];
+
+                // Seleccionamos todos los checkboxes entre los dos clickeados
+                for (let i = minIndex; i <= maxIndex; i++) {
+                    const currentCheckbox = containers[i].querySelector('.media-checkbox');
+                    currentCheckbox.checked = lastChecked.querySelector('.media-checkbox').checked;
+                    // Agregar o quitar la clase según el estado del checkbox
+                    if (currentCheckbox.checked) {
+                        containers[i].classList.add('card-col-selected');
+                    } else {
+                        containers[i].classList.remove('card-col-selected');
+                    }
+                }
+            }
+
+            lastChecked = container;
+        }
+    });
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+    const select = document.getElementById('campo3');
+
+    select.addEventListener('change', (e) => {
+        if (e.target.value === 'Otro') {
+            var otherMediaModal = new bootstrap.Modal(document.getElementById('otherMediaModal'));
+            otherMediaModal.show();
+        }
+    });
+});
+
+

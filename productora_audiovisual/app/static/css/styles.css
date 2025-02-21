@@ -148,16 +148,34 @@ body {
 
 .media-container {
     overflow-x: hidden!important;
+    padding-top: 10px;
+    padding-right: 15px;
     height: 0px;
 }
 
-.media-container>div {
-    margin-right: 5px;
+.card-col {
+    padding-top: 10px;
+    border-radius: 5px;
+    margin-right: 3px;
+    flex: 1 0 20%;
+    max-width: 180.25px;
+}
+
+.card-col-selected {
+    background-color: #0000ff3b;
 }
 
 .card-body {
     aspect-ratio: 16 / 9;
     background-size: cover;
+}
+
+.media-checkbox {
+    position: absolute;
+    right: -5px;
+    top: -10px;
+    zoom: 2;
+    z-index: 999;
 }
 
 .video-name {
@@ -193,4 +211,20 @@ body {
 
 img {
     user-select: none;
+}
+
+.giro {
+    display: inline-block;
+    margin-left: 5px;
+    height: 22px;
+}
+
+/* Definimos la animación de giro */
+@keyframes girar {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
 }
