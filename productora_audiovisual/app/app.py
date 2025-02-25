@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, session, jsonify
 from flask_socketio import SocketIO
 from flask_sqlalchemy import SQLAlchemy
+from utils.config_handler import load_config
 from utils.path_handler import crear_carpeta_destino
 from utils.file_handler import encontrar_videos, copiar_videos
 from utils.thumbnail_handler import generar_y_enviar_thumbnails
@@ -14,11 +15,6 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///producciones.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
-# Función para cargar configuración
-def load_config():
-    with open("config.json", "r") as f:
-        return json.load(f)
     
 # Variable global para la configuración
 config = load_config()

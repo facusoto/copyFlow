@@ -1,5 +1,6 @@
 import os
 import shutil
+from config_handler import load_config
 
 # Tipos de extensión a copiar
 extensiones_video = ('.mp4', '.mov', '.avi', '.mkv', '.mxf')
@@ -18,6 +19,7 @@ def encontrar_videos(origen):
                 medios[i] = [ruta_ffmpeg, file]
 
     return medios
+
 
 def copiar_videos(lista_medios, total_medios, destino, socketio):
     # Proceso de copiado
@@ -42,5 +44,22 @@ def copiar_videos(lista_medios, total_medios, destino, socketio):
         socketio.emit('progreso', {'porcentaje': [porcentaje, key]})
         socketio.sleep(0.1)
 
+
+def identificar_camara(origen):
+    """Detecta el tipo de cámara basado en la estructura de archivos."""
+    config = load_config()
+    camaras = config['cameras']
+    
+    try:
+        contents = os.listdir(origen)
+        for camera, required_folders in camaras.items():
+            if all(folder in contents for folder in required_folders):
+                return camera
+    except Exception as e:
+        print(f"Error al acceder a {origen}: {e}")
+
+    return None
+
+
 if __name__ == "__main__":
-    pass
+    identificar_camara()
