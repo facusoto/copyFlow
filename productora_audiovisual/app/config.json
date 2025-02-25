@@ -2,7 +2,7 @@
     "home_directory": "C:/",
     "ignore_partitions": ["C:\\"],
     "cameras": {
-        "Sony_Handycam": ["BPAV"],
+        "Camara_de_mano": ["BPAV"],
         "GoPro": ["DCIM", "MISC"]
     }
 }

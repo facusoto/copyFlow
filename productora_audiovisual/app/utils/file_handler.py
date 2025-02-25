@@ -1,6 +1,6 @@
 import os
 import shutil
-from config_handler import load_config
+from .config_handler import load_config
 
 # Tipos de extensión a copiar
 extensiones_video = ('.mp4', '.mov', '.avi', '.mkv', '.mxf')
@@ -54,12 +54,14 @@ def identificar_camara(origen):
         contents = os.listdir(origen)
         for camera, required_folders in camaras.items():
             if all(folder in contents for folder in required_folders):
+                print(f"Se detectó la cámara {camera}")
                 return camera
     except Exception as e:
         print(f"Error al acceder a {origen}: {e}")
 
+    print("No se pudo identificar la cámara")
     return None
 
 
 if __name__ == "__main__":
-    identificar_camara()
+    identificar_camara('G:/')

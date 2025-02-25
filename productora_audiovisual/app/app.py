@@ -3,7 +3,7 @@ from flask_socketio import SocketIO
 from flask_sqlalchemy import SQLAlchemy
 from utils.config_handler import load_config
 from utils.path_handler import crear_carpeta_destino
-from utils.file_handler import encontrar_videos, copiar_videos
+from utils.file_handler import encontrar_videos, copiar_videos, identificar_camara
 from utils.thumbnail_handler import generar_y_enviar_thumbnails
 from utils.device_handler import manejar_unidades_nuevas
 import json
@@ -64,6 +64,12 @@ def iniciar_dispositivo():
 
         # Obtener el dispositivo seleccionado
         selected_device = request.form.get("selected-device")
+        session['selected_device'] = selected_device # Guardar en sesión
+
+        # Identificar el tipo de cámara
+        tipo_camara = identificar_camara(selected_device)
+        session['tipo_camara'] = tipo_camara # Guardar en sesión
+
         medios_encontrados = encontrar_videos(selected_device)
 
         # Verificar si se encontraron medios y generar thumbnails
@@ -73,7 +79,7 @@ def iniciar_dispositivo():
         response = jsonify({
             'status': 'success',
             'message': 'Proceso iniciado',
-            'data': medios_encontrados  # Puedes incluir datos relevantes si es necesario
+            'data': [medios_encontrados, tipo_camara]
         })
 
         response.headers['Content-Type'] = 'application/json; charset=utf-8'
@@ -107,9 +113,11 @@ def copiar():
 
     print('Datos guardados en la base de datos')
 
+    tipo_camara = session.get('tipo_camara', [])
+
     # Crear carpeta de destino
     carpeta_destino = crear_carpeta_destino(
-        config['home_directory'], datos["fecha"], datos["institucion"], datos["titulo"]
+        config['home_directory'], tipo_camara, datos["fecha"], datos["institucion"], datos["titulo"]
     )
 
     # Recuperar los medios desde la sesión
