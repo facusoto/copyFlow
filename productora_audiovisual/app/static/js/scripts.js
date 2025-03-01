@@ -355,5 +355,3 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
-
-

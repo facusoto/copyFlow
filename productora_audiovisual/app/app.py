@@ -43,11 +43,38 @@ def index():
     return render_template('index.html')
 
 
-# Ruta para identificar los dispositivos
+# Ruta para cambiar la configuracion del programa
+@app.route('/configuracion', methods=["GET", "POST"])
+def configuracion():
+    if request.method == "POST":
+        datos = request.form
+
+        # Guardar los datos en el archivo de configuración
+        with open('config.json', 'w') as f:
+            json.dump(datos, f, indent=4)
+
+        return redirect(url_for('configuracion'))
+
+    return render_template('configuracion.html')
+
+
+# Ruta para obtener los dispositivos ignorados
+@app.route('/obtener_ignorados', methods=["GET"])
+def obtener_ignorados():
+    return jsonify(config['ignore_partitions'])
+
+
+# Ruta para identificar los dispositivos conectados
 @app.route('/identificar_dispositivos', methods=["POST"])
 def identificar_dispositivos():
-    # Encontrar las unidades nuevas
-    unidades_detectadas = manejar_unidades_nuevas(config['ignore_partitions'])
+    referer = request.headers.get('Referer')
+
+    if referer and '/configuracion' in referer:
+        # La solicitud proviene de /configuracion
+        unidades_detectadas = manejar_unidades_nuevas(None)  # No ignorar particiones
+    else:
+        # La solicitud proviene de otra ruta o no hay Referer
+        unidades_detectadas = manejar_unidades_nuevas(config['ignore_partitions'])
 
     # Emitir la señal de dispositivos detectados al frontend
     socketio.emit('unidades', {'unidades': list(unidades_detectadas)})
