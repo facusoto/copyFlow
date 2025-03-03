@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clasificación de Memorias</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="container mt-5">
+    <h2>Clasificar Memoria</h2>
+    
+    <div class="mb-3">
+        <label for="setName" class="form-label">Nombre del conjunto</label>
+        <input type="text" id="setName" class="form-control" placeholder="Ejemplo: Camara_de_mano">
+    </div>
+    
+    <div class="mb-3">
+        <label for="folderInput" class="form-label">Agregar carpeta</label>
+        <input type="text" id="folderInput" class="form-control" placeholder="Ejemplo: DCIM">
+        <button class="btn btn-primary mt-2" onclick="addFolder()">Agregar Carpeta</button>
+    </div>
+
+    <ul id="folderList" class="list-group mb-3"></ul>
+
+    <button class="btn btn-success" onclick="saveSet()">Guardar Conjunto</button>
+
+    <h3 class="mt-5">Resultados</h3>
+    <pre id="output"></pre>
+
+    <script>
+        let folderArray = [];
+
+        function addFolder() {
+            const folderInput = document.getElementById("folderInput");
+            const folderName = folderInput.value.trim();
+
+            if (folderName && !folderArray.includes(folderName)) {
+                folderArray.push(folderName);
+                
+                const listItem = document.createElement("li");
+                listItem.className = "list-group-item d-flex justify-content-between align-items-center";
+                listItem.innerHTML = `${folderName} 
+                    <button class="btn btn-danger btn-sm" onclick="removeFolder('${folderName}')">Eliminar</button>`;
+
+                document.getElementById("folderList").appendChild(listItem);
+                folderInput.value = "";
+            }
+        }
+
+        function removeFolder(folderName) {
+            folderArray = folderArray.filter(folder => folder !== folderName);
+            renderFolderList();
+        }
+
+        function renderFolderList() {
+            const list = document.getElementById("folderList");
+            list.innerHTML = "";
+            folderArray.forEach(folder => {
+                const listItem = document.createElement("li");
+                listItem.className = "list-group-item d-flex justify-content-between align-items-center";
+                listItem.innerHTML = `${folder} 
+                    <button class="btn btn-danger btn-sm" onclick="removeFolder('${folder}')">Eliminar</button>`;
+                list.appendChild(listItem);
+            });
+        }
+
+        function saveSet() {
+            const setName = document.getElementById("setName").value.trim();
+            if (setName && folderArray.length > 0) {
+                const result = { [setName]: folderArray };
+                document.getElementById("output").textContent = JSON.stringify(result, null, 4);
+                folderArray = [];
+                document.getElementById("setName").value = "";
+                renderFolderList();
+            } else {
+                alert("Por favor ingresa un nombre y al menos una carpeta.");
+            }
+        }
+    </script>
+</body>
+</html>

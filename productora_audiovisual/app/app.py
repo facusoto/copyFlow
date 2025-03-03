@@ -1,8 +1,9 @@
 from flask import Flask, render_template, request, redirect, url_for, session, jsonify
 from flask_socketio import SocketIO
 from flask_sqlalchemy import SQLAlchemy
+from utils.config_handler import load_config
 from utils.path_handler import crear_carpeta_destino
-from utils.file_handler import encontrar_videos, copiar_videos
+from utils.file_handler import encontrar_videos, copiar_videos, identificar_camara
 from utils.thumbnail_handler import generar_y_enviar_thumbnails
 from utils.device_handler import manejar_unidades_nuevas
 import json
@@ -14,11 +15,6 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///producciones.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
-# Función para cargar configuración
-def load_config():
-    with open("config.json", "r") as f:
-        return json.load(f)
     
 # Variable global para la configuración
 config = load_config()
@@ -47,11 +43,38 @@ def index():
     return render_template('index.html')
 
 
-# Ruta para identificar los dispositivos
+# Ruta para cambiar la configuracion del programa
+@app.route('/configuracion', methods=["GET", "POST"])
+def configuracion():
+    if request.method == "POST":
+        datos = request.form
+
+        # Guardar los datos en el archivo de configuración
+        with open('config.json', 'w') as f:
+            json.dump(datos, f, indent=4)
+
+        return redirect(url_for('configuracion'))
+
+    return render_template('configuracion.html')
+
+
+# Ruta para obtener los dispositivos ignorados
+@app.route('/obtener_ignorados', methods=["GET"])
+def obtener_ignorados():
+    return jsonify(config['ignore_partitions'])
+
+
+# Ruta para identificar los dispositivos conectados
 @app.route('/identificar_dispositivos', methods=["POST"])
 def identificar_dispositivos():
-    # Encontrar las unidades nuevas
-    unidades_detectadas = manejar_unidades_nuevas(config['ignore_partitions'])
+    referer = request.headers.get('Referer')
+
+    if referer and '/configuracion' in referer:
+        # La solicitud proviene de /configuracion
+        unidades_detectadas = manejar_unidades_nuevas(None)  # No ignorar particiones
+    else:
+        # La solicitud proviene de otra ruta o no hay Referer
+        unidades_detectadas = manejar_unidades_nuevas(config['ignore_partitions'])
 
     # Emitir la señal de dispositivos detectados al frontend
     socketio.emit('unidades', {'unidades': list(unidades_detectadas)})
@@ -68,6 +91,12 @@ def iniciar_dispositivo():
 
         # Obtener el dispositivo seleccionado
         selected_device = request.form.get("selected-device")
+        session['selected_device'] = selected_device # Guardar en sesión
+
+        # Identificar el tipo de cámara
+        tipo_camara = identificar_camara(selected_device)
+        session['tipo_camara'] = tipo_camara # Guardar en sesión
+
         medios_encontrados = encontrar_videos(selected_device)
 
         # Verificar si se encontraron medios y generar thumbnails
@@ -77,7 +106,7 @@ def iniciar_dispositivo():
         response = jsonify({
             'status': 'success',
             'message': 'Proceso iniciado',
-            'data': medios_encontrados  # Puedes incluir datos relevantes si es necesario
+            'data': [medios_encontrados, tipo_camara]
         })
 
         response.headers['Content-Type'] = 'application/json; charset=utf-8'
@@ -111,9 +140,11 @@ def copiar():
 
     print('Datos guardados en la base de datos')
 
+    tipo_camara = session.get('tipo_camara', [])
+
     # Crear carpeta de destino
     carpeta_destino = crear_carpeta_destino(
-        config['home_directory'], datos["fecha"], datos["institucion"], datos["titulo"]
+        config['home_directory'], tipo_camara, datos["fecha"], datos["institucion"], datos["titulo"]
     )
 
     # Recuperar los medios desde la sesión

@@ -111,7 +111,8 @@ function validateAndSearchMedia(event) {
 
                 // Si los datos están en un diccionario y no en una lista
                 if (data.data && typeof data.data === 'object') {
-                    renderMediaList(Object.values(data.data)); // Convertir el diccionario a una lista
+                    renderMediaList(Object.values(data.data[0])); // Convertir el diccionario a una lista
+                    seleccionarCamara(data.data[1]); // Seleccionar la cámara
                 }
                 document.getElementById('menu-container').classList.add('d-none');
                 document.getElementById('content-container').classList.remove('d-none');
@@ -167,6 +168,12 @@ function renderMediaList(medios) {
     });
 }
 
+function seleccionarCamara(tipo_camara){
+    // Obtiene el select de la cámara y selecciona la opción
+    let camaraSelect = document.getElementsByName('tipo_camara');
+    camaraSelect[0].value = tipo_camara;
+}
+
 // Seleccionamos el contenedor donde los media-cards serán agregados
 let container = document.querySelector('.media-container');
 
@@ -219,6 +226,11 @@ document.getElementById("copiar-btn").addEventListener("click", function (event)
         }
     }
 
+    // Deshabilitar el botón para evitar múltiples clics
+    let button = this;
+    button.disabled = true;
+    button.textContent = "Copiando...";
+
     // Iniciar el proceso de copiado
     fetch("/copiar", {
             method: "POST",
@@ -228,13 +240,20 @@ document.getElementById("copiar-btn").addEventListener("click", function (event)
         .then(data => {
             if (data.error) {
                 alert(data.error);
+                button.disabled = false; // Reactivar el botón en caso de error
+                button.textContent = "Comenzar copiado";
             } else {
                 var addMediaModal = new bootstrap.Modal(document.getElementById('addMediaModal'));
                 addMediaModal.show();
             }
         })
-        .catch(error => console.error("Error:", error));
+        .catch(error => {
+            console.error("Error:", error);
+            button.disabled = false; // Reactivar el botón en caso de error
+            button.textContent = "Comenzar copiado";
+        });
 });
+
 
 // Escuchar progreso y actualizar la barra
 socket.on("progreso", function (data) {
@@ -336,5 +355,3 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
-
-

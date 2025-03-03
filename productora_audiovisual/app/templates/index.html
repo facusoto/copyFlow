@@ -27,7 +27,7 @@
                         <a class="nav-link" href="#">Calendario</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Configuración</a>
+                        <a class="nav-link" href="/configuracion">Configuración</a>
                     </li>
                 </ul>
             </div>
@@ -111,7 +111,17 @@
                                     <option value="Secretaria de deportes">Secretaria de deportes</option>
                                     <option value="Jorge Macri">Jorge Macri</option>
                                     <option value="DIR">DIR</option>
+                                    <option value="CMU">CMU</option>
                                     <option value="Otro">Otro</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="campo4" class="form-label">Tipo de cámara</label>
+                                <select class="form-select" id="campo4" name="tipo_camara">
+                                    <option selected>Elegir una opción</option>
+                                    <option value="Camara_de_mano">Cámara de mano (EX1, EX3)</option>
+                                    <option value="GoPro">GoPro</option>
+                                    <option value="Dron">Dron</option>
                                 </select>
                             </div>
                             <div class="mb-3">
@@ -119,12 +129,12 @@
                                 <input type="text" class="form-control" id="campo4" name="tipo_material">
                             </div>
                             <div class="mb-3">
-                                <label for="campo5" class="form-label">Título</label>
-                                <input type="text" class="form-control" id="campo5" name="titulo">
+                                <label for="campo6" class="form-label">Título</label>
+                                <input type="text" class="form-control" id="campo6" name="titulo">
                             </div>
                             <div class="mb-3">
-                                <label for="campo6" class="form-label">Descripción</label>
-                                <textarea class="form-control" id="campo6" name="observaciones" rows="3"></textarea>
+                                <label for="campo7" class="form-label">Descripción</label>
+                                <textarea class="form-control" id="campo7" name="observaciones" rows="3"></textarea>
                             </div>
                             <button type="submit" class="btn btn-primary w-100" id="copiar-btn">Comenzar Copiado</button>
                         </form>
@@ -197,13 +207,13 @@
                             <div class="form-check">
                                 <input class="form-check-input" type="radio" name="otherMedia" id="flexRadioDefault1">
                                 <label class="form-check-label" for="flexRadioDefault1">
-                                    Sí
+                                    Sí, es un material del Gobierno de la Ciudad
                                 </label>
                             </div>
                             <div class="form-check">
                                 <input class="form-check-input" type="radio" name="otherMedia" id="flexRadioDefault2">
                                 <label class="form-check-label" for="flexRadioDefault2">
-                                    No
+                                    No, es otro tipo de material
                                 </label>
                             </div>
                         </div>                        

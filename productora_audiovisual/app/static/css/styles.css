@@ -170,7 +170,7 @@ body {
     background-size: cover;
 }
 
-.media-checkbox {
+.media-checkbox, .device-checkbox {
     position: absolute;
     right: -5px;
     top: -10px;
