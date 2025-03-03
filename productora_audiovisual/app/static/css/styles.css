@@ -178,6 +178,21 @@ body {
     z-index: 999;
 }
 
+#back-to-devices {
+    margin-right: 5px;
+    border-radius: 50%;
+    padding: 0 7px;
+    cursor: pointer;
+    transition: .2s ease;
+}
+
+#back-to-devices:hover {
+    background: #d6d8d4;
+    border-radius: 50%;
+    padding: 0 7px;
+    transition: .2s ease;
+}
+
 .video-name {
     display: block;
     overflow: hidden;
