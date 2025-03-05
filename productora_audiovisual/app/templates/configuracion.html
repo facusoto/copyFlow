@@ -1,16 +1,19 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistema de Copiado de Medios</title>
     <!-- Enlace al CSS de Bootstrap 5 -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <!-- Enlace a tu archivo CSS personalizado -->
-    <link rel="stylesheet" href="{{ url_for('static',filename='css/styles.css') }}"> 
+    <link rel="stylesheet" href="{{ url_for('static',filename='css/styles.css') }}">
     <link rel="stylesheet" href="..\static\css\styles.css">
 </head>
+
 <body>
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-light bg-light p-3">
@@ -39,37 +42,104 @@
                 <div class="col-md-12">
                     <div class="card-body configuration-panel position-relative">
                         <h1><b>Panel de configuración</b></h1>
-                        <form method="POST" action="" class="form" id="project-form">
-                            <div class="py-3">
-                                <h2>Ignorar dispositivos:</h2>
-                                <div class="alert alert-danger m-4" role="alert">
-                                    <h4 class="alert-heading"><span class="bi bi-exclamation-triangle"></span> ¡Atención!</h4>
-                                    <p>Esta sección le permite seleccionar los dispositivos que desea excluir del proceso de búsqueda de archivos, como particiones de almacenamiento interno. Los dispositivos seleccionados <b>no se mostrarán</b> como destinos disponibles para la copia de archivos.</p>
-                                    <hr>
-                                    <p class="mb-0 text-center">Seleccioná los dispositivos que desees ignorar, evitá seleccionar letras que sean utilizadas por dispositivos externos.</p>
-                                </div>
-                                <div class="mb-3">
-                                    <div class="row row-cols-3 row-cols-md-4 g-3" id="device-container">
-                                        <!-- Acá aparecen los dispositivos -->
+                        <div class="py-4 mt-5 config-section">
+                            <h2 class="config-title">Ignorar dispositivos:</h2>
+                            <div class="alert alert-danger m-4" role="alert">
+                                <h4 class="alert-heading"><span class="bi bi-exclamation-triangle"></span> ¡Atención!
+                                </h4>
+                                <p>En esta sección podés elegir qué dispositivos excluir del proceso de búsqueda de
+                                    archivos. Esto es útil para evitar que se detecten particiones del almacenamiento
+                                    interno o unidades que no quieras leer.</p>
+                                <h6>📌 ¿Cómo funciona?</h6>
+                                <ul>
+                                    <li><strong>Las particiones conectadas</strong> se mostrarán en la primera sección.
+                                        Podés marcarlas para que sean ignoradas.</li>
+                                    <li><strong>Las particiones previamente ignoradas</strong> que ya no estén
+                                        conectadas aparecerán en la sección de <em>particiones desconectadas</em>.
+                                        Seguirán siendo ignoradas hasta que decidas cambiarlo.</li>
+                                </ul>
+                                <hr>
+                                <p class="mb-0 text-center">🔹 <strong>Recomendación:</strong> Evitá seleccionar
+                                    unidades que puedan pertenecer a dispositivos externos como discos duros portátiles
+                                    o pendrives, a menos que realmente quieras excluirlos.</p>
+                            </div>
+                            <div class="m-4">
+                                <div class="row row-cols-3 row-cols-md-4 g-3 justify-content-center"
+                                    id="device-container">
+                                    <!-- Acá aparecen los dispositivos -->
+                                    <h5 class="text-center">Dispositivos conectados</h5>
+                                    <div class="connected-devices row row-cols-3 row-cols-md-4 g-3 w-100">
+                                    </div>
+                                    <h5 class="text-center">Dispositivos desconectados</h5>
+                                    <div class="disconnected-devices row row-cols-3 row-cols-md-4 g-3 w-100">
                                     </div>
                                 </div>
                             </div>
-                            <hr>
-                            <div class="py-3">
-                                <h2>Seleccionar carpeta raíz:</h2>
-                                <div class="alert alert-warning m-4" role="alert">
-                                    <h4 class="alert-heading"><span class="bi bi-exclamation-triangle"></span> ¡Atención!</h4>
-                                    <p>Seleccioná la dirección <i>(es decir una carpeta)</i> donde quieras que se almacenen los archivos a copiar</p>
-                                    <hr>
-                                    <p class="mb-0">Seleccioná la dirección:</p>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="folderInput" class="form-label" id="folderPath">Escribí una dirección</label>
-                                    <input class="form-control" type="text" id="folderInput">
-                                </div>
+                            <div class="m-4 d-flex flex-column">
+                                <button class="btn btn-success align-self-sm-end" onclick="">Guardar
+                                    configuración</button>
                             </div>
-                            <button type="submit" class="btn btn-primary w-100" id="copiar-btn">Guardar configuración</button>
-                        </form>
+                        </div>
+                        <div class="py-4 mt-5 config-section">
+                            <h2 class="config-title">Seleccionar carpeta raíz:</h2>
+                            <div class="alert alert-warning m-4" role="alert">
+                                <h4 class="alert-heading"><span class="bi bi-exclamation-triangle"></span> ¡Atención!
+                                </h4>
+                                <p><strong>Seleccioná la dirección donde quieras almacenar los archivos a
+                                        copiar.</strong> Es decir, elegí una carpeta en tu computadora donde se
+                                    guardarán los archivos que se transfieran desde la memoria.</p>
+                                <hr>
+                                <p class="mb-0">Seleccioná la dirección:</p>
+                            </div>
+                            <div class="m-4">
+                                <label for="rootFolderInput" class="form-label" id="folderPath">Escribí una
+                                    dirección</label>
+                                <input class="form-control" type="text" id="rootFolderInput"
+                                    placeholder="Ejemplo: C:\Users\Usuario\Documentos">
+                            </div>
+                            <div class="m-4 d-flex flex-column">
+                                <button class="btn btn-success align-self-sm-end" onclick="">Guardar
+                                    configuración</button>
+                            </div>
+                        </div>
+                        <div class="py-4 mt-5 config-section">
+                            <h2 class="config-title">Configurar una nueva cámara:</h2>
+                            <div class="alert alert-info m-4" role="alert">
+                                <h4 class="alert-heading"><span class="bi bi-camera"></span> Configurar una nueva
+                                    cámara:</h4>
+                                <p>Para que el programa detecte automáticamente tu dispositivo, seguí estos pasos:</p>
+                                <ul>
+                                    <li>Conectá la memoria a la computadora.</li>
+                                    <li>Observá qué carpetas aparecen entre los archivos que genera la cámara.</li>
+                                    <li>Agregá esas carpetas en la sección a continuación para que el programa pueda
+                                        reconocer el dispositivo automáticamente en el futuro.</li>
+                                    <li>Nombrá al conjunto, ese va a ser el nombre de la carpeta donde se van a copiar
+                                        los videos.</li>
+                                </ul>
+                                <hr>
+                                <p class="mb-0">Una vez configurado, la cámara será detectada sin necesidad de realizar
+                                    este proceso nuevamente.</p>
+                            </div>
+                            <div class="m-4">
+                                <label for="setName" class="form-label">Nombre del conjunto</label>
+                                <input type="text" id="setName" class="form-control"
+                                    placeholder="Ejemplo: Camara_de_mano, GoPro, etc.">
+                            </div>
+                            <div class="m-4">
+                                <label for="addFolderInput" class="form-label">Agregar carpeta</label>
+                                <input type="text" id="addFolderInput" class="form-control" placeholder="Ejemplo: DCIM">
+                                <button class="btn btn-primary mt-2" onclick="addFolder()">Agregar Carpeta</button>
+                            </div>
+                            <ul id="folderList" class="list-group m-4"></ul>
+                            <div class="m-4 d-flex flex-column">
+                                <button class="btn btn-success align-self-sm-end" onclick="saveSet()">Guardar
+                                    configuración</button>
+                            </div>
+                            <div class="m-4 d-flex flex-column d-none">
+                                <h3 class="mt-5">Resultados</h3>
+                                <pre id="output"></pre>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -77,10 +147,14 @@
     </div>
 
     <!-- Enlace al JS de Bootstrap 5 -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous">
+    </script>
     <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
     <script src="{{ url_for('static',filename='js/config_scripts.js') }}"></script>
     <script src="..\static\js\config_scripts.js"></script>
-    <style>@import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');</style>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
+    </style>
 </body>
+
 </html>

@@ -1,27 +1,23 @@
 import psutil
 from flask import url_for
 
-def manejar_unidades_nuevas(unidades_ignoradas):
-    total_unidades = set(part.device for part in psutil.disk_partitions())
-    print(f"Unidades iniciales: {total_unidades}")
-
-    if unidades_ignoradas is not None:
-        try:
-            for unidad in unidades_ignoradas:
-                total_unidades.discard(unidad)
-        except TypeError:
-            # Si unidades_ignoradas no es iterable, se mantiene el conjunto original
-            pass # No es necesario hacer nada, ya que total_unidades no se modificó
+def manejar_unidades(unidades_ignoradas=None):
+    """Obtiene las particiones conectadas y devuelve un diccionario con su estado de conexión e ignorado."""
     
-    print(f"Unidades finales: {total_unidades}")
+    # Obtener todas las particiones conectadas
+    unidades_detectadas = {part.device for part in psutil.disk_partitions()}
+    unidades_ignoradas = set(unidades_ignoradas or [])
+    
+    # Crear diccionario con el estado de cada unidad
+    resultado = {}
+    for unidad in unidades_detectadas | unidades_ignoradas:
+        resultado[unidad] = {
+            'conectado': unidad in unidades_detectadas,
+            'ignorado': unidad in unidades_ignoradas,
+            'imagen': url_for('static', filename='img/external-hard-drive.png')
+        }
 
-    # Generar el URL de la imagen estática solo una vez
-    imagen_comun = url_for('static', filename='img/external-hard-drive.png')
-
-    # Crear la lista de unidades con la imagen correspondiente
-    unidades_con_imagenes = [{'nombre': unidad, 'imagen': imagen_comun} for unidad in total_unidades]
-
-    return unidades_con_imagenes  # Retornar las unidades encontradas
+    return resultado
 
 if __name__ == "__main__":
-    manejar_unidades_nuevas(None)
+    manejar_unidades()

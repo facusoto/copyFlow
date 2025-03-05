@@ -1,6 +1,6 @@
 {
     "home_directory": "C:/",
-    "ignore_partitions": ["C:\\", "D:\\", "E:\\", "F:\\"],
+    "ignore_partitions": ["C:\\", "E:\\"],
     "cameras": {
         "Camara_de_mano": ["BPAV"],
         "GoPro": ["DCIM", "MISC"]

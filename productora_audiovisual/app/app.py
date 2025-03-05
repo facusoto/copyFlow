@@ -5,7 +5,7 @@ from utils.config_handler import load_config
 from utils.path_handler import crear_carpeta_destino
 from utils.file_handler import encontrar_videos, copiar_videos, identificar_camara
 from utils.thumbnail_handler import generar_y_enviar_thumbnails
-from utils.device_handler import manejar_unidades_nuevas
+from utils.device_handler import manejar_unidades
 import json
 
 # Importar gevent y parchearlo
@@ -46,41 +46,17 @@ def index():
 # Ruta para cambiar la configuracion del programa
 @app.route('/configuracion', methods=["GET", "POST"])
 def configuracion():
-    if request.method == "POST":
-        datos = request.form
-
-        # Guardar los datos en el archivo de configuración
-        with open('config.json', 'w') as f:
-            json.dump(datos, f, indent=4)
-
-        return redirect(url_for('configuracion'))
 
     return render_template('configuracion.html')
 
 
-# Ruta para obtener los dispositivos ignorados
-@app.route('/obtener_ignorados', methods=["GET"])
-def obtener_ignorados():
-    return jsonify(config['ignore_partitions'])
-
-
 # Ruta para identificar los dispositivos conectados
-@app.route('/identificar_dispositivos', methods=["POST"])
+@app.route('/identificar_dispositivos', methods=["GET", "POST"])
 def identificar_dispositivos():
-    referer = request.headers.get('Referer')
-
-    if referer and '/configuracion' in referer:
-        # La solicitud proviene de /configuracion
-        unidades_detectadas = manejar_unidades_nuevas(None)  # No ignorar particiones
-    else:
-        # La solicitud proviene de otra ruta o no hay Referer
-        unidades_detectadas = manejar_unidades_nuevas(config['ignore_partitions'])
-
-    # Emitir la señal de dispositivos detectados al frontend
-    socketio.emit('unidades', {'unidades': list(unidades_detectadas)})
+    total_unidades = manejar_unidades(config['ignore_partitions'])
 
     # Devolver la lista de unidades encontradas como respuesta JSON
-    return jsonify({'unidades': list(unidades_detectadas)})
+    return jsonify({'unidades': total_unidades})
 
 
 # Ruta para iniciar el copiado de archivos

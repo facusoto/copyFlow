@@ -170,6 +170,25 @@ body {
     background-size: cover;
 }
 
+.config-section {
+    border: 2px solid;
+    border-radius: 25px;
+    position: relative;
+    transition: .5s ease;
+}
+
+.config-section:hover {
+    border-color: #0060c7;
+    transition: .5s ease;
+}
+
+.config-title {
+    position: absolute;
+    top: -20px;
+    left: 25px;
+    background-color: #fff;
+}
+
 .media-checkbox, .device-checkbox {
     position: absolute;
     right: -5px;

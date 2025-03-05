@@ -20,10 +20,18 @@ function identificarDispositivos() {
         })
         .then(response => response.json())
         .then(data => {
-            console.log("Dispositivos identificados:", data.unidades);
-            if (data.unidades) {
-                agregarDispositivosAlContenedor(data.unidades);
-            }
+            const dispositivos = data.unidades;
+            const dispositivosValidos = [];
+            
+            Object.entries(dispositivos).forEach(([unidad, info]) => {
+                console.log(`Unidad: ${unidad}, Conectado: ${info.conectado}, Ignorado: ${info.ignorado}`);
+                
+                if (info.conectado && !info.ignorado) {
+                    dispositivosValidos.push({ nombre: unidad, imagen: info.imagen });
+                }
+            });
+            
+            agregarDispositivosAlContenedor(dispositivosValidos);
         })
         .catch(error => console.error("Error identificando dispositivos:", error));
 }
@@ -33,12 +41,6 @@ document.addEventListener("DOMContentLoaded", identificarDispositivos);
 
 // Identificar nuevos dispositivos al clickear
 document.getElementById('reload-partitions').addEventListener('click', identificarDispositivos);
-
-// Escuchar el evento de actualización de unidades en tiempo real
-socket.on('unidades', function (data) {
-    console.log('Unidades encontradas (socket):', data.unidades);
-    agregarDispositivosAlContenedor(data.unidades);
-});
 
 function agregarDispositivosAlContenedor(unidades) {
     let deviceContainer = document.getElementById("device-container");
