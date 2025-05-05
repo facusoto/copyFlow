@@ -159,6 +159,7 @@ body {
     margin-right: 3px;
     flex: 1 0 20%;
     max-width: 180.25px;
+    max-height: 151px;
 }
 
 .card-col-selected {
@@ -187,6 +188,7 @@ body {
     top: -20px;
     left: 25px;
     background-color: #fff;
+    padding: 0 10px;
 }
 
 .media-checkbox, .device-checkbox {

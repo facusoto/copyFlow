@@ -12,7 +12,7 @@ def crear_carpeta_destino(base_path, tipo_camara, fecha, institucion, titulo):
     mes_nombre = [None, "Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"][int(mes)]
 
     # Construir la ruta
-    carpeta_destino = os.path.join(base_path, "Gobierno_CABA", institucion, año, F"{mes.zfill(2)} - {mes_nombre}", f"{fecha} - {titulo}", tipo_camara)
+    carpeta_destino = os.path.join(base_path, "Gobierno_CABA", institucion, año, f"{mes.zfill(2)} - {mes_nombre}", f"{fecha} - {titulo}", tipo_camara)
 
     # Crear la carpeta si no existe
     os.makedirs(carpeta_destino, exist_ok=True)

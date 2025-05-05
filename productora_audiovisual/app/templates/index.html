@@ -106,12 +106,21 @@
                                 <label for="campo3" class="form-label">Institución</label>
                                 <select class="form-select" id="campo3" name="institucion">
                                     <option selected>Elegir una opción</option>
-                                    <option value="Policia">Policia</option>
+                                    <option value="AGC">AGC</option>
                                     <option value="Bomberos">Bomberos</option>
-                                    <option value="Secretaria de deportes">Secretaria de deportes</option>
-                                    <option value="Jorge Macri">Jorge Macri</option>
-                                    <option value="DIR">DIR</option>
+                                    <option value="CIS">CIS</option>
                                     <option value="CMU">CMU</option>
+                                    <option value="Cultura">Cultura</option>
+                                    <option value="Escuelas">Escuelas</option>
+                                    <option value="Espacio_e_higiene_urbana">Espacio e higiene urbana</option>
+                                    <option value="Hospitales">Hospitales</option>
+                                    <option value="Jorge_Macri">Jorge Macri</option>
+                                    <option value="Obras">Obras</option>
+                                    <option value="Policia">Policía</option>
+                                    <option value="SAME">SAME</option>
+                                    <option value="Secretaria_de_deporte">Secretaría de deporte</option>
+                                    <option value="Subte">Subte</option>
+                                    <option value="Transito">Transito</option>
                                     <option value="Otro">Otro</option>
                                 </select>
                             </div>
@@ -126,7 +135,11 @@
                             </div>
                             <div class="mb-3">
                                 <label for="campo4" class="form-label">Tipo de material</label>
-                                <input type="text" class="form-control" id="campo4" name="tipo_material">
+                                <div class="w-100 p-3 bg-white rounded" id="campo4">
+                                    <label><input type="checkbox" class="form-check-input" name="options" value="Imagenes_pano"> Imágenes para paño</label><br>
+                                    <label><input type="checkbox" class="form-check-input" name="options" value="Nota"> Nota</label><br>
+                                    <label><input type="checkbox" class="form-check-input" name="options" value="Enlatado"> Enlatado</label><br>
+                                </div>
                             </div>
                             <div class="mb-3">
                                 <label for="campo6" class="form-label">Título</label>
@@ -190,7 +203,7 @@
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Finalizar</button>
-                            <button type="button" class="btn btn-primary">Continuar copiando</button>
+                            <button type="button" id="agregar-medios" class="btn btn-primary">Continuar copiando</button>
                         </div>
                     </div>
                 </div>

@@ -73,7 +73,7 @@ function agregarDispositivosAlContenedor(unidades) {
     });
 }
 
-// Delegación de eventos
+// Escuchar clics en el contenedor de dispositivos
 document.getElementById('device-container').addEventListener('click', function (event) {
     // Verificar si el clic fue en un dispositivo seleccionable
     if (event.target.closest('.selectable-device')) {
@@ -90,6 +90,22 @@ document.getElementById('device-container').addEventListener('click', function (
     }
 });
 
+function toggleView(view) {
+    const content = document.getElementById('content-container');
+    const menu = document.getElementById('menu-container');
+    const mask = document.getElementById('form-mask');
+
+    if (view === 'menu') {
+        content.classList.add('d-none');
+        menu.classList.remove('d-none');
+        mask.classList.remove('d-none');
+    } else if (view === 'content') {
+        menu.classList.add('d-none');
+        content.classList.remove('d-none');
+        mask.classList.add('d-none');
+    }
+}
+
 // Validar que se haya seleccionado un dispositivo y luego buscar los medios
 function validateAndSearchMedia(event) {
     const selectedDevice = document.getElementById('selected-device').value;
@@ -98,7 +114,7 @@ function validateAndSearchMedia(event) {
         alert('Por favor, selecciona un dispositivo antes de continuar.');
     } else {
         // Realizar la llamada al endpoint para buscar los medios
-        fetch('/iniciar_dispositivo', {
+        fetch('/device/media-discovery', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded'
@@ -116,25 +132,37 @@ function validateAndSearchMedia(event) {
                     renderMediaList(Object.values(data.data[0])); // Convertir el diccionario a una lista
                     seleccionarCamara(data.data[1]); // Seleccionar la cámara
                 }
-                document.getElementById('menu-container').classList.add('d-none');
-                document.getElementById('content-container').classList.remove('d-none');
-                document.getElementById('form-mask').classList.add('d-none');
+                toggleView('content');
 
             })
             .catch(error => console.error('Error en la solicitud:', error));
     }
 }
 
+// Agregar evento al botón con id "search-media"
+document.getElementById('search-media').addEventListener('click', validateAndSearchMedia);
+
 // Volver al menú de selección de dispositivos
 document.getElementById('back-to-devices').addEventListener('click', function (event) {
+    // Hacer una petición al backend para limpiar la sesión
+    fetch('/clear-session', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log(data.message); // Mensaje de confirmación en la consola
+    })
+    .catch(error => console.error('Error al limpiar la sesión:', error));
+
     // Eliminar los medios encontrados
     const mediaContainer = document.querySelector('.media-container .row');
     mediaContainer.innerHTML = '';
 
     // Cambiar los display de los contenedores
-    document.getElementById('content-container').classList.add('d-none');
-    document.getElementById('menu-container').classList.remove('d-none');
-    document.getElementById('form-mask').classList.remove('d-none');
+    toggleView('menu');
 });
 
 // Renderizar la lista de medios encontrados
@@ -200,7 +228,6 @@ container.addEventListener('mouseenter', (event) => {
     }
 }, true);
 
-
 // Escuchar la creacion de thumbnails y agregarlas al frontend
 socket.on("frame", function (data) {
     console.log("Datos recibidos", data.frame);
@@ -208,9 +235,6 @@ socket.on("frame", function (data) {
     let videoCard = document.getElementById(`media-${data.frame[0]}`);
     videoCard.style.backgroundImage = `url(${data.frame[1]})`;
 });
-
-// Agregar evento al botón con id "search-media"
-document.getElementById('search-media').addEventListener('click', validateAndSearchMedia);
 
 // Validar datos del formulario y copiar
 document.getElementById("copiar-btn").addEventListener("click", function (event) {
@@ -234,7 +258,7 @@ document.getElementById("copiar-btn").addEventListener("click", function (event)
     button.textContent = "Copiando...";
 
     // Iniciar el proceso de copiado
-    fetch("/copiar", {
+    fetch("/start-copy", {
             method: "POST",
             body: formData
         })
